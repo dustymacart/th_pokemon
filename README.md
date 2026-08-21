@@ -4,16 +4,24 @@ An ASP.NET Core 8 application for searching a Pokémon card inventory. It is
 designed to be published and hosted directly by IIS using the ASP.NET Core
 Module; no Node.js process or reverse proxy is required.
 
-## Build and publish
+## Build the deployment artifact
 
-The IIS server needs the .NET 8 Hosting Bundle. Publish the deployable artifact:
+Build on a development workstation or CI runner that has the .NET 8 SDK:
 
 ```powershell
-dotnet publish .\ThPokemon.csproj --configuration Release --output .\publish
+.\build-deployment.ps1
 ```
 
-Deploy the contents of `publish`, not the repository source, to the IIS site's
-physical path. The publish command generates the required `web.config`.
+This creates `artifacts\th-pokemon-iis.zip`, including the Windows .NET runtime,
+application binaries, browser assets, configuration, and IIS `web.config`.
+
+The server does not need the .NET SDK and does not run `dotnet publish`. The
+deployment playbook extracts this ZIP into the IIS site's physical path.
+
+The base server image still needs the ASP.NET Core Module for IIS. It is
+installed by the .NET 8 Hosting Bundle and is the IIS component that starts the
+prebuilt executable. Install it once as part of base Windows provisioning; it is
+not an application deployment command.
 
 Configure the IIS application pool with:
 
