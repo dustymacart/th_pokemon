@@ -10,15 +10,14 @@ Requires Node.js 18 or newer. No package installation is needed.
 npm start
 ```
 
-Then open <http://localhost:8080>. The server listens on all network interfaces,
-so it can also be reached at `http://<server-name-or-ip>:8080` when Windows
-Firewall and the network allow that port.
+Then open <http://localhost:3000>. By default, Node listens only on the local
+machine because IIS provides external access.
 
 To use a different address or port for a session:
 
 ```powershell
-$env:HOST = "0.0.0.0"
-$env:PORT = "8080"
+$env:HOST = "127.0.0.1"
+$env:PORT = "3000"
 npm start
 ```
 
@@ -26,18 +25,26 @@ Run the tests with `npm test`.
 
 ## Windows web server deployment
 
-Install Node.js 18 or newer on the server, copy the application to it, and run
-`npm start` from the application directory. Configure the Node process as a
-Windows service or another supervised process so it starts automatically and
-restarts after failures.
+The repository includes `web.config`, which forwards IIS requests to the Node
+application at `http://127.0.0.1:3000`.
 
-Allow inbound TCP port 8080 in Windows Firewall if clients will connect to Node
-directly.
+On the server:
 
-For HTTPS on port 443, keep this application listening internally on port 8080
-and configure IIS as a reverse proxy to `http://localhost:8080`. Bind the site's
-TLS certificate to port 443 in IIS. This keeps certificate management and HTTPS
-termination in IIS instead of the Node application.
+1. Install Node.js 18 or newer, IIS URL Rewrite, and IIS Application Request
+   Routing (ARR).
+2. In IIS Manager, open the server's **Application Request Routing Cache**, then
+   **Server Proxy Settings**, and enable the proxy.
+3. Deploy the complete repository and set the IIS site's physical path to its
+   root (the directory containing `web.config`).
+4. Add an IIS HTTP binding on port 8080 with no host name, or with the actual DNS
+   host name clients will use.
+5. Run `npm start` from the application directory. Configure it as a Windows
+   service or other supervised process for automatic startup and recovery.
+6. Allow inbound TCP port 8080 in Windows Firewall.
+
+For HTTPS, add an IIS HTTPS binding on port 443 and select the site's TLS
+certificate. Node remains private on port 3000; IIS handles both public ports and
+certificate management.
 
 ## Database
 
