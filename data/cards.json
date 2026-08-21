@@ -1,0 +1,6 @@
+[
+  { "id": 1, "name": "Charizard", "number": "004/102", "set": "Base Set", "rarity": "Rare Holo", "condition": "Lightly Played", "quantity": 1 },
+  { "id": 2, "name": "Pikachu", "number": "058/102", "set": "Base Set", "rarity": "Common", "condition": "Near Mint", "quantity": 2 },
+  { "id": 3, "name": "Charizard ex", "number": "006/165", "set": "151", "rarity": "Double Rare", "condition": "Near Mint", "quantity": 1 },
+  { "id": 4, "name": "Charmander", "number": "004/165", "set": "151", "rarity": "Common", "condition": "Near Mint", "quantity": 3 }
+]

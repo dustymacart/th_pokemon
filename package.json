@@ -1,0 +1,12 @@
+{
+  "name": "th-pokemon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Searchable Pokémon card inventory starter",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" }
+}

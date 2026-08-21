@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search your Pokémon card collection by collector number">
+    <title>Pokémon Card Inventory</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Your collection</p>
+        <h1>Find a Pokémon card</h1>
+        <p class="intro">Search by the collector number printed at the bottom of a card.</p>
+      </header>
+      <form id="search-form" role="search">
+        <label for="card-number">Collector number</label>
+        <div class="search-row">
+          <input id="card-number" name="number" inputmode="numeric" placeholder="Try 4 or 004/102" autocomplete="off">
+          <button type="submit">Search cards</button>
+        </div>
+      </form>
+      <section aria-live="polite" aria-busy="false" id="results-section">
+        <div class="result-heading">
+          <h2>Cards in the collection</h2>
+          <span id="result-count"></span>
+        </div>
+        <p id="message">Loading your cards…</p>
+        <div id="card-grid" class="card-grid"></div>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
