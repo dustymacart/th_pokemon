@@ -10,9 +10,34 @@ Requires Node.js 18 or newer. No package installation is needed.
 npm start
 ```
 
-Then open <http://localhost:3000>.
+Then open <http://localhost:8080>. The server listens on all network interfaces,
+so it can also be reached at `http://<server-name-or-ip>:8080` when Windows
+Firewall and the network allow that port.
+
+To use a different address or port for a session:
+
+```powershell
+$env:HOST = "0.0.0.0"
+$env:PORT = "8080"
+npm start
+```
 
 Run the tests with `npm test`.
+
+## Windows web server deployment
+
+Install Node.js 18 or newer on the server, copy the application to it, and run
+`npm start` from the application directory. Configure the Node process as a
+Windows service or another supervised process so it starts automatically and
+restarts after failures.
+
+Allow inbound TCP port 8080 in Windows Firewall if clients will connect to Node
+directly.
+
+For HTTPS on port 443, keep this application listening internally on port 8080
+and configure IIS as a reverse proxy to `http://localhost:8080`. Bind the site's
+TLS certificate to port 443 in IIS. This keeps certificate management and HTTPS
+termination in IIS instead of the Node application.
 
 ## Database
 
