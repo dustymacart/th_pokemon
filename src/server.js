@@ -3,8 +3,8 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { findCardsByNumber } = require('./cardRepository');
 
-const port = Number(process.env.PORT) || 3000;
-const host = process.env.HOST || '127.0.0.1';
+const port = Number(process.env.PORT) || 8080;
+const host = process.env.HOST || '0.0.0.0';
 const publicDirectory = path.join(__dirname, '..', 'public');
 const staticFiles = new Map([
   ['/', ['index.html', 'text/html; charset=utf-8']],

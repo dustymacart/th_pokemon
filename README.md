@@ -10,14 +10,15 @@ Requires Node.js 18 or newer. No package installation is needed.
 npm start
 ```
 
-Then open <http://localhost:3000>. By default, Node listens only on the local
-machine because IIS provides external access.
+Then open <http://localhost:8080>. By default, the application listens on all
+network interfaces, so other computers can use
+`http://<server-name-or-ip>:8080` when the firewall permits it.
 
 To use a different address or port for a session:
 
 ```powershell
-$env:HOST = "127.0.0.1"
-$env:PORT = "3000"
+$env:HOST = "0.0.0.0"
+$env:PORT = "8080"
 npm start
 ```
 
@@ -25,26 +26,18 @@ Run the tests with `npm test`.
 
 ## Windows web server deployment
 
-The repository includes `web.config`, which forwards IIS requests to the Node
-application at `http://127.0.0.1:3000`.
+Install Node.js 18 or newer, deploy the complete repository, and run `npm start`
+from the application directory. The application serves HTTP directly on port
+8080; IIS is not required.
 
-On the server:
+Allow inbound TCP port 8080 in Windows Firewall. Also ensure IIS or another
+program is not already using that port. Configure the Node process as a Windows
+service or another supervised process so it starts automatically and restarts
+after failures.
 
-1. Install Node.js 18 or newer, IIS URL Rewrite, and IIS Application Request
-   Routing (ARR).
-2. In IIS Manager, open the server's **Application Request Routing Cache**, then
-   **Server Proxy Settings**, and enable the proxy.
-3. Deploy the complete repository and set the IIS site's physical path to its
-   root (the directory containing `web.config`).
-4. Add an IIS HTTP binding on port 8080 with no host name, or with the actual DNS
-   host name clients will use.
-5. Run `npm start` from the application directory. Configure it as a Windows
-   service or other supervised process for automatic startup and recovery.
-6. Allow inbound TCP port 8080 in Windows Firewall.
-
-For HTTPS, add an IIS HTTPS binding on port 443 and select the site's TLS
-certificate. Node remains private on port 3000; IIS handles both public ports and
-certificate management.
+Set `PORT` before starting the application to use any other available port. Port
+443 additionally requires an HTTPS certificate and TLS configuration; that can
+be added separately when the certificate and desired hostname are available.
 
 ## Database
 
