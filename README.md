@@ -14,6 +14,14 @@ Then open <http://localhost:3000>.
 
 Run the tests with `npm test`.
 
+## Database
+
+Open a terminal with access to your domain credentials and run:
+
+```powershell
+runas /netonly /user:<domain>\<username> "C:\Program Files\Microsoft SQL Server Management Studio 22\Release\Common7\IDE\Ssms.exe"
+```
+
 ## Project structure
 
 ```text
