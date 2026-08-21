@@ -1,72 +1,83 @@
 # Pokémon Card Inventory
 
-A small starter site for looking up owned Pokémon cards by collector number.
+An ASP.NET Core 8 application for searching a Pokémon card inventory. It is
+designed to be published and hosted directly by IIS using the ASP.NET Core
+Module; no Node.js process or reverse proxy is required.
 
-## Run it
+## Build and publish
 
-Requires Node.js 18 or newer. No package installation is needed.
-
-```powershell
-npm start
-```
-
-Then open <http://localhost:8080>. By default, the application listens on all
-network interfaces, so other computers can use
-`http://<server-name-or-ip>:8080` when the firewall permits it.
-
-To use a different address or port for a session:
+The IIS server needs the .NET 8 Hosting Bundle. Publish the deployable artifact:
 
 ```powershell
-$env:HOST = "0.0.0.0"
-$env:PORT = "8080"
-npm start
+dotnet publish .\ThPokemon.csproj --configuration Release --output .\publish
 ```
 
-Run the tests with `npm test`.
+Deploy the contents of `publish`, not the repository source, to the IIS site's
+physical path. The publish command generates the required `web.config`.
 
-## Windows web server deployment
+Configure the IIS application pool with:
 
-Install Node.js 18 or newer, deploy the complete repository, and run `npm start`
-from the application directory. The application serves HTTP directly on port
-8080; IIS is not required.
+- .NET CLR version: **No Managed Code**
+- Managed pipeline mode: **Integrated**
+- Identity: an account granted access to the SQL Server database
 
-Allow inbound TCP port 8080 in Windows Firewall. Also ensure IIS or another
-program is not already using that port. Configure the Node process as a Windows
-service or another supervised process so it starts automatically and restarts
-after failures.
-
-Set `PORT` before starting the application to use any other available port. Port
-443 additionally requires an HTTPS certificate and TLS configuration; that can
-be added separately when the certificate and desired hostname are available.
+The IIS site binding controls the external port. Configure an HTTP binding for
+port 8080. A future HTTPS binding can use port 443 without changing application
+code.
 
 ## Database
 
-Open a terminal with access to your domain credentials and run:
+SQL Server is configured at `th-windb01.digitalcanyon.org` with Windows
+Integrated Authentication. The default catalog name is `PokemonCards`; change
+it if the actual database has a different name.
+
+Configuration is in `appsettings.json`:
+
+```json
+{
+  "Database": {
+    "Enabled": true
+  },
+  "ConnectionStrings": {
+    "PokemonDatabase": "Server=th-windb01.digitalcanyon.org;Database=PokemonCards;Integrated Security=True;Encrypt=True;TrustServerCertificate=False"
+  }
+}
+```
+
+For deployment, configuration can be supplied without modifying the artifact:
+
+```text
+Database__Enabled=true
+ConnectionStrings__PokemonDatabase=Server=th-windb01.digitalcanyon.org;Database=PokemonCards;Integrated Security=True;Encrypt=True;TrustServerCertificate=False
+```
+
+Run `database/schema.sql` against the target catalog to create `dbo.Cards`.
+Grant the IIS application-pool identity permission to connect and read that
+table. With database access disabled, the application uses `data/cards.json` for
+local development.
+
+To open SQL Server Management Studio with domain credentials:
 
 ```powershell
 runas /netonly /user:<domain>\<username> "C:\Program Files\Microsoft SQL Server Management Studio 22\Release\Common7\IDE\Ssms.exe"
 ```
 
+## Local development
+
+```powershell
+dotnet run
+```
+
+Open <http://localhost:8080>. The health endpoint is `GET /health`, and
+`GET /api/cards?number=4` searches the inventory.
+
 ## Project structure
 
 ```text
-data/cards.json          Starter inventory data
-public/                  Browser UI (HTML, CSS, and JavaScript)
-src/cardRepository.js    Data access and number matching
-src/server.js            HTTP server and JSON API
-test/                    Repository tests
+Data/                   JSON and SQL Server data access
+database/schema.sql     SQL Server table definition
+public/                 Browser UI
+Program.cs              HTTP API and application setup
+ThPokemon.csproj        ASP.NET Core project
+appsettings.json        Runtime and database configuration
 ```
-
-`GET /api/cards?number=4` returns every owned card whose collector number matches
-`4`, including stored values such as `004/102`. An empty number returns the full
-inventory.
-
-The browser calls the API, and the API uses `cardRepository`. That boundary makes
-it straightforward to replace `data/cards.json` with SQLite or PostgreSQL later.
-
-## Suggested next steps
-
-1. Replace the sample rows in `data/cards.json` with your inventory.
-2. Add create/edit/delete endpoints for managing cards.
-3. Move the repository to a database once multiple people or frequent edits are involved.
-4. Add set, rarity, Pokémon name, and condition filters.
